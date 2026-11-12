@@ -1,0 +1,14 @@
+{
+  "slug": "rumah-kedua",
+  "date": "2023-01",
+  "dateLabel": "ARSIP · 2023 / 01",
+  "title": "Tempat yang jadi rumah kedua",
+  "story": "Ada tempat-tempat yang tidak istimewa bagi orang lain. Tapi kita tahu persis kursi mana yang selalu diperebutkan.",
+  "photo": "./moment-2.png",
+  "alt": "Placeholder foto tempat berkumpul; ganti dengan foto yang disetujui.",
+  "showInTimeline": true,
+  "featured": true,
+  "consent": true,
+  "hidden": false,
+  "placeholder": true
+}

@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../components/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import MemberList from '../components/MemberList.astro';
+import Timeline from '../components/Timeline.astro';
+import StackCards from '../components/StackCards.astro';
+import Marquee from '../components/Marquee.astro';
+import HorizontalGallery from '../components/HorizontalGallery.astro';
+import VideoClip from '../components/VideoClip.astro';
+import Closing from '../components/Closing.astro';
+import StoryDialog from '../components/StoryDialog.astro';
+
+function visible<T extends { data: { hidden?: boolean; consent?: boolean } }>(items: T[]): T[] {
+  return items.filter((item) => item.data.consent === true && item.data.hidden !== true);
+}
+
+const members = visible(await getCollection('members'));
+const allMoments = visible(await getCollection('moments'));
+const timelineMoments = allMoments.filter((moment) => moment.data.showInTimeline).sort((a,b) => a.data.date.localeCompare(b.data.date));
+const featuredMoments = allMoments.filter((moment) => moment.data.featured).slice(0, 7);
+const jokes = visible(await getCollection('jokes')).sort((a,b) => a.data.order - b.data.order);
+const gallery = visible(await getCollection('gallery')).sort((a,b) => a.data.order - b.data.order);
+const videos = visible(await getCollection('videos')).sort((a,b) => a.data.kind.localeCompare(b.data.kind));
+const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL || 'arsip@example.com';
+---
+<BaseLayout>
+  <header class="site-header">
+    <div class="wrap nav-shell">
+      <div class="nav-pill">
+        <a class="brand" href="#top" aria-label="Kembali ke atas">
+          <span class="brand-icon" aria-hidden="true">RK</span>
+          <span class="brand-label">Just Friend</span>
+        </a>
+        <nav class="nav-right" aria-label="Navigasi utama">
+          <a href="#anggota">Anggota</a>
+          <a href="#timeline">Perjalanan</a>
+          <a href="#galeri">Galeri</a>
+          <button class="motion-toggle" id="motionToggle" type="button" aria-pressed="false">
+            <span class="button-icon" aria-hidden="true"></span>
+            <span class="button-label">Kurangi gerak</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <main id="top">
+    <Hero gallery={gallery} memberCount={members.length} />
+    <div class="intro-line wrap"><span>BUKAN SEKADAR FOTO</span><strong>Ini tentang kita, yang pernah ada di sana.</strong><span>SWIPE / SCROLL ↓</span></div>
+    <MemberList members={members} />
+    <section class="section section--graphite image-sequence-section" id="image-sequence-section">
+      <div class="wrap">
+        <div class="image-sequence-wrap">
+          <canvas id="image-sequence" width="1158" height="770" aria-label="Animasi gambar besar" role="img"></canvas>
+        </div>
+      </div>
+    </section>
+    <Timeline moments={timelineMoments} />
+    <StackCards moments={featuredMoments} />
+    <Marquee jokes={jokes} />
+    <VideoClip videos={videos} />
+    <HorizontalGallery gallery={gallery} />
+    <Closing />
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-top">
+        <div><div class="footer-title">Just Friend<span class="accent-dot"></span></div><p class="meta footer-meta">ARSIP KENANGAN · 2022—2026</p></div>
+        <div class="footer-links"><a href="#top">Kembali ke atas ↑</a><a href="#galeri">Galeri</a><button id="shareBtn" type="button">Bagikan ↗</button><a href={`mailto:${contactEmail}?subject=Permintaan%20hapus%20foto`}>Hapus saya / privasi</a></div>
+      </div>
+      <div class="footer-bottom"><span>DIBUAT DARI MATERI DAN INGATAN BERSAMA</span><span>NO TRACKERS · NO PUBLIC COMMENTS</span></div>
+    </div>
+  </footer>
+  <StoryDialog />
+</BaseLayout>

@@ -1,0 +1,35 @@
+:root {
+  color-scheme: dark;
+  /* Modern Graphite: layered charcoal, graphite, and soft silver */
+  --bg: #111315;
+  --bg-raise: #191c20;
+  --ink: #eef0f2;
+  --muted: #9aa1aa;
+  --paper: #e7e9ec;
+  --paper-ink: #17191c;
+  --accent: #c5cbd2;
+  --line: rgba(214, 220, 228, 0.14);
+
+  /* Palet lintas-section: ink, graphite, mist, dan paper */
+  --ink-950: #111315;
+  --ink-900: #191c20;
+  --ink-800: #252a30;
+  --ink-700: #30363d;
+  --mist-300: #c5cbd2;
+  --mist-200: #dfe3e8;
+  --mist-100: #eef0f2;
+  --paper-soft: #f4f4f2;
+  --paper-cool: #e7e9ec;
+  --paper-dark: #17191c;
+  --paper-muted: #626970;
+  --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --sans: "Arial", "Helvetica Neue", sans-serif;
+  --display: Georgia, "Times New Roman", serif;
+  --hand: "Segoe Print", "Bradley Hand", cursive;
+  --dur-fast: 0.25s;
+  --dur-base: 0.6s;
+  --dur-slow: 1.1s;
+  --dur-scene: 1.35s;
+  --signature: cubic-bezier(0.22, 1, 0.36, 1);
+  --cinema: cubic-bezier(0.77, 0, 0.175, 1);
+}

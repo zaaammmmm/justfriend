@@ -1,0 +1,29 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+interface Props { gallery: CollectionEntry<'gallery'>[]; }
+const { gallery } = Astro.props;
+---
+<section class="section gallery-section section--paper editorial-panel" data-editorial-panel id="galeri">
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2 class="section-title" data-reveal="lines">Beberapa hal<br /><em>tidak perlu caption.</em></h2></div>
+    </div>
+    <div class="gallery-track" data-horizontal-gallery tabindex="0" aria-label="Galeri foto; geser secara horizontal untuk melihat semua foto">
+      {gallery.map((item) => (
+        <figure class="gallery-item" style={`--r:${item.data.rotation}deg`} tabindex="0" data-cursor="lihat">
+          <Image src={item.data.photo} alt={item.data.alt} width={540} height={660} widths={[270,540,810]} sizes="80vw" loading="lazy" decoding="async" format="webp" quality={72} />
+          <figcaption>{item.data.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+    <div class="gallery-progress" aria-hidden="true"><span></span></div>
+    <div class="ephemera" aria-label="Potongan benda yang disimpan">
+      <div class="ticket" style="--r:-2deg"><span class="meta">ARSIP / 001</span><strong>Tiket pulang</strong><small>ONE WAY · ANYWHERE</small></div>
+      <div class="ticket" style="--r:1deg"><span class="meta">ARSIP / 002</span><strong>Struk kopi</strong><small>MEJA NOMOR 06</small></div>
+      <div class="ticket" style="--r:-1deg"><span class="meta">ARSIP / 003</span><strong>Catatan kecil</strong><small>JANGAN LUPA KETEMU</small></div>
+      <div class="ticket" style="--r:2deg"><span class="meta">ARSIP / 004</span><strong>Hari biasa</strong><small>EDISI TAK TERULANG</small></div>
+      <div class="ticket" style="--r:-1deg"><span class="meta">ARSIP / 005</span><strong>Catatan lipat</strong><small>DISIMPAN DI DOMPET</small></div>
+    </div>
+  </div>
+</section>

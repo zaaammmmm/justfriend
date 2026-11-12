@@ -1,0 +1,14 @@
+{
+  "slug": "perjalanan-singkat",
+  "title": "Perjalanan singkat",
+  "kind": "ambient",
+  "poster": "./poster-ambient.png",
+  "mp4": "/video/perjalanan-singkat-720.mp4",
+  "webm": "/video/perjalanan-singkat-720.webm",
+  "aspect": "16/9",
+  "hasSpeech": false,
+  "sourceReady": false,
+  "consent": true,
+  "hidden": false,
+  "placeholder": true
+}

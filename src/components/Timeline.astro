@@ -1,0 +1,27 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+interface Props { moments: CollectionEntry<'moments'>[]; }
+const { moments } = Astro.props;
+---
+<section class="section timeline-section section--graphite editorial-panel" data-editorial-panel id="timeline">
+  <span class="ghost" aria-hidden="true">THEN</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2 class="section-title" data-reveal="lines">Waktu berjalan.<br /><em>Kita tertinggal cerita.</em></h2></div>
+    </div>
+    <div class="timeline" data-timeline>
+      <svg class="timeline-svg timeline-wide" viewBox="0 0 900 1400" preserveAspectRatio="none" aria-hidden="true"><path d="M450 0 C260 120 650 220 450 350 S250 560 450 700 S650 920 450 1050 S260 1260 450 1400" pathLength="1" /></svg>
+      <svg class="timeline-svg timeline-tall" viewBox="0 0 100 1400" preserveAspectRatio="none" aria-hidden="true"><path d="M50 0 C15 180 85 260 50 400 S15 680 50 800 S85 1100 50 1400" pathLength="1" /></svg>
+      {moments.map((moment, index) => (
+        <article class={`timeline-item ${index % 2 ? 'right' : ''}`} data-timeline-item>
+          <button class="timeline-point" type="button" data-open-moment={moment.data.slug} data-title={moment.data.title} data-date={moment.data.dateLabel} data-story={moment.data.story} aria-label={`Buka momen ${moment.data.title}`} data-cursor="buka"></button>
+          <time datetime={moment.data.date}>{moment.data.dateLabel}</time>
+          <h3>{moment.data.title}</h3>
+          <p>{moment.data.story}</p>
+          <Image class="timeline-img" src={moment.data.photo} alt={moment.data.alt} width={560} height={420} widths={[280,560,840]} sizes="(max-width: 639px) 100vw, 280px" loading="lazy" decoding="async" format="webp" quality={72} />
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

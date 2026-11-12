@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { jokes: CollectionEntry<'jokes'>[]; }
+const { jokes } = Astro.props;
+const first = jokes.slice(0, Math.ceil(jokes.length / 2));
+const second = jokes.slice(Math.ceil(jokes.length / 2));
+---
+<section class="section jokes-section section--ink editorial-panel" data-editorial-panel data-panel-pin id="jokes">
+  <span class="ghost" aria-hidden="true">LOL</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2 class="section-title" data-reveal="lines">Kalau tahu,<br /><em>ya tahu saja.</em></h2></div>
+    </div>
+  </div>
+  {[first, second].map((row, index) => (
+    <div class="marquee" data-marquee data-reverse={index === 1 ? 'true' : 'false'} aria-hidden={index === 1 ? 'true' : undefined}>
+      <div class="marquee-inner">
+        {row.map((joke) => <span>{joke.data.quote} <i aria-hidden="true">✳</i></span>)}
+        <span class="marquee-copy" aria-hidden="true">{row.map((joke) => <span>{joke.data.quote} <i>✳</i></span>)}</span>
+      </div>
+    </div>
+  ))}
+  <div class="wrap marquee-controls"><button id="pauseMarquee" type="button" aria-pressed="false">Ⅱ &nbsp; Jeda tulisan</button></div>
+</section>
