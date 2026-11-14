@@ -1,0 +1,10 @@
+{
+  "photo": "./gallery-4.png",
+  "alt": "Foto placeholder galeri 4; ganti dengan foto yang telah disetujui.",
+  "caption": "Catatan galeri 4",
+  "order": 4,
+  "rotation": 2,
+  "consent": true,
+  "hidden": false,
+  "placeholder": true
+}

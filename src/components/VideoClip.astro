@@ -1,0 +1,29 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+interface Props { videos: CollectionEntry<'videos'>[]; }
+const { videos } = Astro.props;
+---
+<section class="section video-section section--graphite" id="video"><div class="video-grid wrap" aria-label="Video kenangan">
+  {videos.map((video) => (
+    <article class="video-entry">
+      <div class="video-card" style={`aspect-ratio:${video.data.aspect}`}>
+        <Image class="video-poster" src={video.data.poster} alt={`Poster ${video.data.title}`} width={960} height={540} widths={[480,960]} sizes="(max-width: 639px) 100vw, 50vw" loading="lazy" decoding="async" format="webp" quality={70} />
+        {video.data.kind === 'ambient' && video.data.sourceReady && (
+          <video class="ambient-video" data-ambient muted loop playsinline preload="none" poster={video.data.poster.src} width="1280" height="720" aria-hidden="true">
+            {video.data.webm && <source data-src={video.data.webm} type="video/webm" />}
+            <source data-src={video.data.mp4} type="video/mp4" />
+          </video>
+        )}
+        <div class="video-overlay">
+          <div><span class="meta">{video.data.kind === 'ambient' ? 'AMBIENT MEMORY' : 'VIDEO CERITA'}</span><h3>{video.data.title}</h3></div>
+          {video.data.kind === 'story' && <button class="play-btn" type="button" data-story-video={video.data.slug} data-video-title={video.data.title} data-video-ready={String(video.data.sourceReady)} data-mp4={video.data.mp4} data-webm={video.data.webm ?? ''} data-transcript={video.data.transcript ?? ''} data-captions={video.data.captions ?? ''} data-has-speech={String(video.data.hasSpeech)} aria-label={`Buka video ${video.data.title}`} data-cursor="buka">▶</button>}
+          {video.data.kind === 'ambient' && <span class="accent-dot" aria-hidden="true"></span>}
+        </div>
+      </div>
+      <p class="video-note">{video.data.kind === 'story'
+        ? (video.data.sourceReady ? 'VIDEO CERITA · DIPUTAR SETELAH AKSI PENGGUNA.' : 'VIDEO CERITA DIPUTAR SETELAH KLIK. Tambahkan file video sendiri untuk mengaktifkan pemutaran.')
+        : (video.data.sourceReady ? 'VIDEO AMBIENT · TANPA AUDIO, DIMUAT SAAT MENDEKATI LAYAR.' : 'POSTER AMBIENT. Video otomatis belum dimuat pada prototipe ini agar hemat data.')}</p>
+    </article>
+  ))}
+</div></section>

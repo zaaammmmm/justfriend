@@ -1,0 +1,202 @@
+--- a/justfriend/src/scripts/animations/horizontal.ts
++++ b/justfriend/src/scripts/animations/horizontal.ts
+@@ -56,7 +56,8 @@
+ 
+     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+     renderer.outputColorSpace = THREE.SRGBColorSpace;
+-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
++    // High DPR is expensive for a decorative effect; keep it bounded.
++    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+     renderer.setClearColor(0x000000, 0);
+ 
+     const scene = new THREE.Scene();
+@@ -143,15 +144,23 @@
+     };
+ 
+     let lastFrameTime = performance.now();
++    let visible = false;
+     const tick = (now: number) => {
+-      if (!texture) return;
+-      const delta = (now - lastFrameTime) * 0.001;
++      if (!visible || !texture) return;
++      // Clamp delta after tab switches to avoid a large shader time jump.
++      const delta = Math.min((now - lastFrameTime) * 0.001, 0.05);
+       lastFrameTime = now;
+       uniforms.uTime.value += delta;
+       uniforms.uScrollVelocity.value = scrollVelocity.v;
+       uniforms.uVelocityStrength.value = scrollVelocity.s;
+       renderer.render(scene, camera);
+     };
++    const visibility = new IntersectionObserver(([entry]) => {
++      visible = !!entry?.isIntersecting;
++      lastFrameTime = performance.now();
++      if (visible && texture) renderer.render(scene, camera);
++    }, { rootMargin: '120px', threshold: 0.01 });
++    visibility.observe(figure);
+ 
+     const handleTexture = (loadedTexture: THREE.Texture) => {
+       texture = loadedTexture;
+@@ -172,6 +181,7 @@
+ 
+     cleanups.push(() => {
+       gsap.ticker.remove(tick);
++      visibility.disconnect();
+       resizeObserver.disconnect();
+       window.removeEventListener('resize', layout);
+       if (texture) texture.dispose();
+--- a/justfriend/src/scripts/animations/timeline.ts
++++ b/justfriend/src/scripts/animations/timeline.ts
+@@ -28,37 +28,62 @@
+   const container = document.querySelector<HTMLElement>('[data-timeline]');
+   if (!container) return () => undefined;
+   const items = [...container.querySelectorAll<HTMLElement>('[data-timeline-item]')];
+-  const svg = container.querySelector<SVGSVGElement>(window.matchMedia('(max-width: 639px)').matches ? '.timeline-tall' : '.timeline-wide');
+-  const path = svg?.querySelector<SVGPathElement>('path');
+-  if (!svg || !path) return () => undefined;
++  if (!items.length) return () => undefined;
+ 
+-  if (!motionAllowed()) {
+-    path.style.strokeDashoffset = '0';
+-    items.forEach((item) => item.classList.add('is-reached'));
+-    return () => undefined;
+-  }
++  let tween: gsap.core.Tween | null = null;
++  let path: SVGPathElement | null = null;
++  let fractions: number[] = [];
++  let frame = 0;
+ 
+-  const fractions = items.map((item) => nearestPathFraction(path, item));
+-  const tween = gsap.to(path, {
+-    strokeDashoffset: 0,
+-    ease: 'none',
+-    scrollTrigger: {
+-      trigger: container,
+-      start: 'top 72%',
+-      end: 'bottom 68%',
+-      scrub: true,
+-      invalidateOnRefresh: true,
+-      onUpdate(self) {
+-        path.style.strokeDashoffset = String(1 - self.progress);
+-        items.forEach((item, index) => item.classList.toggle('is-reached', self.progress >= fractions[index]));
++  const build = () => {
++    tween?.scrollTrigger?.kill();
++    tween?.kill();
++    const svg = container.querySelector<SVGSVGElement>(
++      window.matchMedia('(max-width: 639px)').matches ? '.timeline-tall' : '.timeline-wide',
++    );
++    path = svg?.querySelector<SVGPathElement>('path') ?? null;
++    if (!path) return;
++
++    if (!motionAllowed()) {
++      path.style.strokeDashoffset = '0';
++      items.forEach((item) => item.classList.add('is-reached'));
++      return;
++    }
++
++    fractions = items.map((item) => nearestPathFraction(path!, item));
++    path.style.strokeDasharray = '1';
++    path.style.strokeDashoffset = '1';
++    tween = gsap.to(path, {
++      strokeDashoffset: 0,
++      ease: 'none',
++      scrollTrigger: {
++        trigger: container,
++        start: 'top 72%',
++        end: 'bottom 68%',
++        scrub: 0.35,
++        invalidateOnRefresh: true,
++        onUpdate(self) {
++          if (!path) return;
++          path.style.strokeDashoffset = String(1 - self.progress);
++          items.forEach((item, index) => item.classList.toggle('is-reached', self.progress >= fractions[index]));
++        },
+       },
+-    },
+-  });
+-  const refresh = () => ScrollTrigger.refresh();
++    });
++  };
++
++  const refresh = () => {
++    cancelAnimationFrame(frame);
++    frame = requestAnimationFrame(() => {
++      build();
++      ScrollTrigger.refresh();
++    });
++  };
++  build();
+   window.addEventListener('resize', refresh, { passive: true });
+   return () => {
++    cancelAnimationFrame(frame);
+     window.removeEventListener('resize', refresh);
+-    tween.scrollTrigger?.kill();
+-    tween.kill();
++    tween?.scrollTrigger?.kill();
++    tween?.kill();
+   };
+ }
+--- a/justfriend/src/scripts/animations/hero.ts
++++ b/justfriend/src/scripts/animations/hero.ts
+@@ -1,7 +1,7 @@
+ import gsap from 'gsap';
+ import { motionAllowed } from '../motion';
+ 
+-let introPlayed = false;
++let introPlayed = false;\nlet introTimeline: gsap.core.Timeline | null = null;
+ 
+ export function playHeroIntro(): void {
+   if (!motionAllowed() || introPlayed) return;
+@@ -12,7 +12,7 @@
+   const polaroids = gsap.utils.toArray<HTMLElement>('.polaroid');
+   const cue = document.querySelector<HTMLElement>('.hero-bottomline');
+ 
+-  const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
++  const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });\n  introTimeline = timeline;
+ 
+   if (heroPhoto) {
+     gsap.set(heroPhoto, {
+@@ -176,3 +176,10 @@
+   const velocity = inertia.getVelocity(target, 'x') || 0;
+   gsap.to(target, { rotation: gsap.utils.clamp(-6, 6, velocity / 250), duration: 0.35, ease: 'signature', overwrite: 'auto' });
+ }
++
++/** Complete the intro cleanly when motion is disabled mid-animation. */
++export function stopHeroIntro(): void {
++  if (!introTimeline) return;
++  introTimeline.progress(1).kill();
++  introTimeline = null;
++}
+--- a/justfriend/src/scripts/main.ts
++++ b/justfriend/src/scripts/main.ts
+@@ -3,7 +3,7 @@
+ import { initSmoothScroll, type SmoothScrollHandle } from './smooth-scroll';
+ import { motionAllowed, setManualMotionReduced, syncMotionControl, systemPrefersReducedMotion } from './motion';
+ import { runSplash } from './splash';
+-import { playHeroIntro, initHeroInteractions } from './animations/hero';
++import { playHeroIntro, stopHeroIntro, initHeroInteractions } from './animations/hero';
+ import { initHeroParallax } from './animations/hero-parallax';
+ import { initMembers } from './animations/members';
+ import { initTimeline } from './animations/timeline';
+@@ -19,14 +19,6 @@
+ 
+ gsap.registerPlugin(ScrollTrigger);
+ 
+-if ('scrollRestoration' in history) {
+-  history.scrollRestoration = 'manual';
+-}
+-window.scrollTo(0, 0);
+-window.addEventListener('load', () => {
+-  window.scrollTo(0, 0);
+-}, { once: true });
+-
+ const cleanups: Array<() => void> = [];
+ let smooth: SmoothScrollHandle | null = null;
+ let motionInitialized = false;
+@@ -42,6 +34,7 @@
+ 
+ function teardownMotion(): void {
+   motionInitialized = false;
++  stopHeroIntro();
+   cleanups.splice(0).reverse().forEach((cleanup) => cleanup());
+   smooth?.destroy();
+   smooth = null;

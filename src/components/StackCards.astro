@@ -1,0 +1,30 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+interface Props { moments: CollectionEntry<'moments'>[]; }
+const { moments } = Astro.props;
+const rotations = [-2, 1.5, -1, 2, -1.5, 1, -2.2];
+---
+<section class="section stack-section section--mist editorial-panel" data-editorial-panel id="momen">
+  <span class="ghost" aria-hidden="true">BEST</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2 class="section-title" data-reveal="lines">Tidak semuanya<br /><em>masuk akal.</em></h2></div>
+    </div>
+    <ol class="stack" style="timeline-scope: --card-0, --card-1, --card-2, --card-3, --card-4, --card-5, --card-6, --card-7;">
+      {moments.map((moment, index) => (
+        <li class="stack-card" style={`--i:${index};--rot:${rotations[index % rotations.length]}deg;view-timeline-name:--card-${index};${index < moments.length - 1 ? `--next-timeline:--card-${index + 1}` : ''}`}>
+          <div class={`stack-card__inner ${index < moments.length - 1 ? 'has-next' : ''}`}>
+            <Image src={moment.data.photo} alt={moment.data.alt} width={900} height={680} widths={[450,900]} sizes="(max-width: 639px) 100vw, 50vw" loading="lazy" decoding="async" format="webp" quality={76} />
+            <div class="stack-caption">
+              <span class="meta">{moment.data.dateLabel}</span>
+              <h3>{moment.data.title}</h3>
+              <p>{moment.data.caption ?? moment.data.story}</p>
+              <button class="text-link" type="button" data-open-moment={moment.data.slug} data-title={moment.data.title} data-date={moment.data.dateLabel} data-story={moment.data.story} data-cursor="buka">Buka cerita ↗</button>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

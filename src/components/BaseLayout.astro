@@ -1,0 +1,76 @@
+---
+import Splash from './Splash.astro';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title = 'Just Friend',
+  description = 'Sebuah arsip kecil tentang orang-orang, tempat, dan hal-hal yang membuat kita menjadi kita.',
+  ogImage = '/images/og-placeholder.png',
+} = Astro.props;
+const site = Astro.site ?? new URL('https://example.invalid');
+const canonical = new URL(Astro.url.pathname, site).toString();
+const absoluteOgImage = new URL(ogImage, site).toString();
+---
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#111315" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={absoluteOgImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" as="image" href="/images/place-placeholder.jpg" type="image/jpeg" fetchpriority="high" />
+    <style is:inline>
+      html { background: #111315; color: #EEF0F2; scrollbar-gutter: stable; overflow-x: clip; }
+      body { overflow-x: clip; }
+      #splash { display: none; position: fixed; inset: 0; z-index: 9999; place-items: center; background: #111315; color: #EEF0F2; transition: opacity 1.35s cubic-bezier(.77,0,.175,1), visibility 1.35s; }
+      .js #splash { display: grid; }
+      #splash.is-exit { opacity: 0; visibility: hidden; pointer-events: none; }
+      #splash .splash-inner { transition: transform 1.35s cubic-bezier(.77,0,.175,1), opacity .9s; }
+      #splash.is-exit .splash-inner { opacity: 0; transform: scale(1.025); }
+      .has-intro .polaroid { opacity: 0; transform: translateY(-48px) scale(.98); }
+      @media (prefers-reduced-motion: reduce) { #splash, #splash .splash-inner { transition-duration: .2s; } }
+    </style>
+    <script is:inline>
+      (() => {
+        document.documentElement.classList.add('js');
+        try {
+          const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || sessionStorage.getItem('rk-reduce-motion') === '1';
+          if (!reduced) document.documentElement.classList.add('has-intro');
+        } catch { if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('has-intro'); }
+        // Failsafe independen dari bundle Astro: splash/intro tidak dapat mengunci halaman.
+        window.setTimeout(() => {
+          document.documentElement.classList.remove('has-intro');
+          document.getElementById('splash')?.remove();
+        }, 2500);
+      })();
+    </script>
+  </head>
+  <body>
+    <Splash />
+    <div class="progress" aria-hidden="true"></div>
+    <div id="cursorLabel" class="cursor-label" aria-hidden="true"></div>
+    <slot />
+    <script>import '../scripts/main.ts';</script>
+  </body>
+</html>

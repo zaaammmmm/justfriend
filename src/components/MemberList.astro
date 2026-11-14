@@ -1,0 +1,28 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+interface Props { members: CollectionEntry<'members'>[]; }
+const { members } = Astro.props;
+---
+<section class="section section--paper editorial-panel" data-editorial-panel id="anggota">
+  <span class="ghost" aria-hidden="true">US</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2 class="section-title" data-reveal="lines">Satu cerita,<br /><em>banyak kepala.</em></h2></div>
+    </div>
+    <div class="members-grid">
+      {members.map((member, index) => (
+        <button class="member" type="button" aria-expanded="false" data-member data-cursor="buka">
+          <span class="member-no">{String(index + 1).padStart(2, '0')}</span>
+          <div class="member-copy">
+            <h3 class="member-name">{member.data.name}</h3>
+            <p class="member-role">{member.data.fact}</p>
+            <p class="member-quote">“{member.data.quote}”</p>
+            {member.data.signaturePath && <svg class="member-signature" viewBox="0 0 220 60" aria-hidden="true"><path class="signature-path" d={member.data.signaturePath} /></svg>}
+          </div>
+          <Image class="member-photo" src={member.data.photo} alt={member.data.alt} width={180} height={220} widths={[100,180,300]} sizes="100px" loading="lazy" decoding="async" format="webp" quality={72} />
+        </button>
+      ))}
+    </div>
+  </div>
+</section>

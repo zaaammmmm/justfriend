@@ -1,0 +1,14 @@
+{
+  "slug": "sore-yang-panjang",
+  "title": "Sore yang panjang",
+  "kind": "ambient",
+  "poster": "./poster-ambient.png",
+  "mp4": "/video/sore-yang-panjang-720.mp4",
+  "webm": "/video/sore-yang-panjang-720.webm",
+  "aspect": "16/9",
+  "hasSpeech": false,
+  "sourceReady": false,
+  "consent": true,
+  "hidden": false,
+  "placeholder": true
+}

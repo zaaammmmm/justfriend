@@ -1,0 +1,12 @@
+{
+  "name": "Nama Anggota 02",
+  "nickname": "Panggilan 02",
+  "fact": "Fakta singkat anggota (ganti dengan detail yang disetujui).",
+  "role": "ANGGOTA",
+  "quote": "Kutipan contoh; ganti dengan kutipan asli setelah mendapat izin.",
+  "photo": "./member-2.png",
+  "alt": "Placeholder foto anggota 2; ganti dengan foto yang telah disetujui.",
+  "consent": true,
+  "hidden": false,
+  "placeholder": true
+}

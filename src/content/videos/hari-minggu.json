@@ -1,0 +1,13 @@
+{
+  "slug": "hari-minggu",
+  "title": "Potongan hari Minggu",
+  "kind": "story",
+  "poster": "./poster-story.png",
+  "mp4": "/video/hari-minggu.mp4",
+  "aspect": "16/9",
+  "hasSpeech": false,
+  "consent": true,
+  "hidden": false,
+  "sourceReady": false,
+  "placeholder": true
+}

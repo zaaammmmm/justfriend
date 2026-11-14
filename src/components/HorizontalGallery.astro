@@ -1,0 +1,17 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+interface Props { gallery: CollectionEntry<'gallery'>[]; }
+const { gallery } = Astro.props;
+---
+<section class="section gallery-section section--paper editorial-panel" data-editorial-panel id="galeri">
+  <div class="gallery-wrap">
+    <div class="gallery gallery--bento gallery--switch" id="gallery-scrubbed" aria-label="Scrubbed Bento Gallery">
+      {gallery.slice(0, 8).map((item, index) => (
+        <figure class:list={['gallery__item', { 'is-main': index === 0 }]} style={`--r:${item.data.rotation}deg`} tabindex="0" data-cursor="lihat" aria-label={item.data.alt}>
+          <Image src={item.data.photo} alt={item.data.alt} width={540} height={660} widths={[270,540,810]} sizes="(max-width: 640px) 78vw, 32vw" loading="lazy" decoding="async" format="webp" quality={72} />
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>

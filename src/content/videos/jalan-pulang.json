@@ -1,0 +1,14 @@
+{
+  "slug": "jalan-pulang",
+  "title": "Jalan pulang",
+  "kind": "ambient",
+  "poster": "./poster-ambient.png",
+  "mp4": "/video/jalan-pulang-720.mp4",
+  "webm": "/video/jalan-pulang-720.webm",
+  "aspect": "16/9",
+  "hasSpeech": false,
+  "sourceReady": false,
+  "consent": true,
+  "hidden": false,
+  "placeholder": true
+}

@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  gallery: CollectionEntry<'gallery'>[];
+  memberCount: number;
+}
+const { gallery, memberCount } = Astro.props;
+const rotations = [-3, 4, 2, -2, 5, 3];
+---
+<section class="hero editorial-panel" data-editorial-panel data-panel-pin id="hero" aria-labelledby="hero-title">
+  <div class="hero-photo" data-parallax-layer="background" aria-hidden="true"></div>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy"> 
+      <h1 id="hero-title" aria-label="Just Friend.">
+        <span class="hero-title-line" aria-hidden="true"><span class="letter">J</span><span class="letter">u</span><span class="letter">s</span><span class="letter">t</span></span>
+        <span class="hero-title-line hero-title-line--second" aria-hidden="true"><em><span class="letter">F</span><span class="letter">r</span><span class="letter">i</span><span class="letter">e</span><span class="letter">n</span><span class="letter">d</span></em></span>
+      </h1>
+      <p class="hero-desc">Tentang orang-orang yang datang tanpa rencana, lalu entah bagaimana menjadi bagian dari hampir semua cerita.</p>
+    </div>
+    <div class="hero-stage" id="heroStage" aria-label="Kolase foto kenangan">
+      {gallery.slice(0, 6).map((item, index) => (
+        <figure class={`polaroid p${index + 1}`} style={`--rot:${rotations[index]}deg`}>
+          <div class="polaroid__inner" data-draggable data-rot="0" tabindex="0" role="group" aria-label={`Foto kenangan: ${item.data.caption}`} data-cursor="seret">
+            <Image src={item.data.photo} alt={item.data.alt} width={420} height={514} widths={[220,420,640]} sizes="(max-width: 639px) 29vw, 180px" loading={index < 2 ? 'eager' : 'lazy'} decoding="async" format="webp" quality={76} />
+            <figcaption>{item.data.caption}</figcaption>
+            <span class="polaroid-wash" aria-hidden="true"></span>
+          </div>
+        </figure>
+      ))}
+      <p class="hero-note">foto-foto yang tersisa</p>
+      <button class="photo-secret" type="button" data-secret-photo aria-label="Ketuk foto ini lima kali untuk membuka catatan rahasia">✳</button>
+      <p class="secret-note" id="photoSecretNote" hidden>Kalau kamu sampai di sini, berarti kamu bagian dari cerita ini. ✳</p>
+    </div>
+  </div>
+</section>
