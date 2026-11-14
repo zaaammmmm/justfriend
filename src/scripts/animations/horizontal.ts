@@ -1,10 +1,11 @@
 import gsap from 'gsap';
+import { Flip } from 'gsap/Flip';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type Lenis from 'lenis';
 import * as THREE from 'three';
 import { motionAllowed } from '../motion';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, Flip);
 
 const scrollVelocity = { v: 0, s: 0 };
 const clamp = gsap.utils.clamp(-2000, 2000);
@@ -183,6 +184,62 @@ export function initGalleryShaders(): () => void {
 
   return () => {
     cleanups.forEach((cleanup) => cleanup());
+  };
+}
+
+export function initBentoGallery(): () => void {
+  const gallery = document.querySelector<HTMLElement>('#gallery-scrubbed');
+  const items = gallery ? [...gallery.querySelectorAll<HTMLElement>('.gallery__item')] : [];
+  if (!gallery || !items.length || !motionAllowed()) return () => undefined;
+
+  let flipCtx: gsap.Context | null = null;
+
+  const build = () => {
+    const galleryItems = [...gallery.querySelectorAll<HTMLElement>('.gallery__item')];
+    if (!galleryItems.length) return;
+
+    flipCtx?.revert();
+    gallery.classList.remove('gallery--final');
+
+    flipCtx = gsap.context(() => {
+      gallery.classList.add('gallery--final');
+      const flipState = Flip.getState(galleryItems);
+      gallery.classList.remove('gallery--final');
+
+      const flip = Flip.to(flipState, {
+        simple: true,
+        absolute: true,
+        duration: 1.15,
+        ease: 'expo.inOut',
+      });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: gallery,
+          start: 'top center',
+          end: 'bottom center',
+          scrub: true,
+          pin: gallery.parentElement ?? undefined,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      tl.add(flip);
+      return () => {
+        gsap.set(galleryItems, { clearProps: 'all' });
+      };
+    }, gallery);
+  };
+
+  build();
+
+  const handleResize = () => build();
+  window.addEventListener('resize', handleResize);
+
+  return () => {
+    window.removeEventListener('resize', handleResize);
+    flipCtx?.revert();
+    gallery.classList.remove('gallery--final');
   };
 }
 

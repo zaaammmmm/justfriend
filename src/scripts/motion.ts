@@ -40,7 +40,7 @@ export function syncMotionControl(): void {
   if (!button) return;
   const reduced = !motionAllowed();
   button.setAttribute('aria-pressed', String(reduced));
-  button.textContent = reduced ? 'Gerak dikurangi' : 'Kurangi gerak';
+  // button.textContent = reduced ? 'Gerak dikurangi' : 'Kurangi gerak';
   if (systemPrefersReducedMotion()) {
     button.title = 'Gerak dikurangi mengikuti pengaturan perangkat.';
   }

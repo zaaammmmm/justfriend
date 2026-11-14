@@ -9,7 +9,7 @@ import { initMembers } from './animations/members';
 import { initTimeline } from './animations/timeline';
 import { initStackCards } from './animations/stack-cards';
 import { initMarquee } from './animations/marquee';
-import { initGalleryShaders, initHorizontalGallery } from './animations/horizontal';
+import { initGalleryShaders, initHorizontalGallery, initBentoGallery } from './animations/horizontal';
 import { initRevealText } from './animations/reveal-text';
 import { initLabelCursor } from './animations/cursor';
 import { initProgressFallback } from './fallbacks';
@@ -57,6 +57,7 @@ function setupMotion(): void {
   cleanups.push(initTimeline());
   cleanups.push(initStackCards());
   cleanups.push(initMarquee(smooth.lenis));
+  cleanups.push(initBentoGallery());
   cleanups.push(initHorizontalGallery(smooth.lenis));
   cleanups.push(initGalleryShaders());
   cleanups.push(initHeroParallax());
